@@ -1,0 +1,29 @@
+name: Validar consola y registros
+on:
+  push:
+    branches: [feature/es-completo-20261107]
+  workflow_dispatch:
+jobs:
+  comprobar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Comprobar sintaxis y variables de inicio
+        run: |
+          python -m compileall -q app.py automation_engine.py
+          python - <<'PY'
+          import pathlib,re
+          page=pathlib.Path('templates/index.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script(?:\\s[^>]*)?>(.*?)</script>',page,re.S|re.I)
+          assert scripts, 'No se encontró JavaScript'
+          pathlib.Path('/tmp/gaip-inline.js').write_text('\n'.join(scripts),encoding='utf-8')
+          assert 'validateCardBeforeRun(startPaso)' in page
+          assert 'logConnectionStatus' in page
+          PY
+          node --check /tmp/gaip-inline.js

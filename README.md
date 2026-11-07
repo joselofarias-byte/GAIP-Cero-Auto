@@ -1,46 +1,46 @@
-========================================================================
-  Google AI Pro (5 TB) 零成本两年 (US$0.00 -> 24个月) 全自动控制台
-========================================================================
+# GAIP-Cero-Auto — Consola de Google AI Pro en español
 
-【一、运行环境要求】
-1. Windows 10 / 11 系统
-2. 已安装 Google Chrome 浏览器（默认路径即可）
-3. 已安装 Python 3.10 或更高版本（安装时勾选 Add Python to PATH）
-4. 网络环境：本机开启美区（US）代理，或在控制台左侧填写代理模板
+Aplicación local para Windows 10/11 que administra cuentas y ejecuta tareas relacionadas con Google AI Pro mediante una interfaz web.
 
-【二、快速启动步骤】
-1. 首次使用请双击运行：【1_首次运行_安装依赖并启动.bat】
-2. 之后日常使用直接双击：【2_启动控制台.bat】
-3. 浏览器会自动打开控制台页面：http://127.0.0.1:8765
+**Aviso:** los resultados de promociones y suscripciones no están garantizados. Antes de confirmar cualquier pago, comprobá el precio y las condiciones reales que muestre Google.
 
-【三、自定义填写支付卡 & 跑号说明】
-1. 填写支付卡（必填）：
-   - 在网页左侧【全局配置与内联免税绑卡】区域，填入你自己的 Visa 或 Mastercard 外币卡：
-     * 卡号（16位数字）
-     * 有效期（月 / 年，如 08 / 29）
-     * 安全码（3位 CVC）
-     * 持卡人英文姓名
-     * 免税邮编默认已填好 97201（美国俄勒冈免税州），无需修改
-   - 填写后点击【💾 保存配置】。
-   - 注：脚本内置严格 0 元消费保护，仅在结账弹窗确认为 US$0.00 时才会点击订阅，全程 0 扣费。
+## Requisitos
 
-2. 批量导入 Google 账号：
-   - 在网页右侧【批量放号导入区】粘贴账号（每行一个），支持以下任意格式：
-     * 邮箱----密码----辅助邮箱
-     * 邮箱----密码----辅助邮箱----2FA密钥
-     * 邮箱----密码----2FA密钥
-   - 点击【➕ 一键导入账号列表】。
+- Windows 10 u 11.
+- Google Chrome instalado.
+- Python 3.10 o superior, disponible en PATH.
+- Conexión de red; proxy opcional configurable desde la consola.
 
-3. 开始全自动执行：
-   - 点击单个账号右侧的【▶ 执行】或顶部的【▶ 批量全自动执行】。
-   - 脚本会自动完成：
-     Step 1: 自动登录 Google 并通过辅助邮箱 / 2FA 验证
-     Step 2: 内联免税绑卡 + 首层 12 个月免费包 (US$0.00)
-     Step 3: 叠加二层 6 个月免费包 (US$0.00 -> 18个月)
-     Step 4: 叠加三层 6 个月免费包 (US$0.00 -> 24个月封顶)
-     Step 5: 自动前往 Google Play 取消自动续订，锁死 2 年到期权益并截图验真
+## Inicio
 
+1. Ejecutá `1_首次运行_安装依赖并启动.bat` la primera vez.
+2. Para los siguientes usos, ejecutá `2_启动控制台.bat`.
+3. Abrí `http://127.0.0.1:8765` si el navegador no se inicia automáticamente.
 
-# 卡网：https://faka.cdkey.si
-# 博客：https://blog.caowo.de
-# TG群：@Hello_Florence
+## Configuración
+
+En **Configuración general**, ingresá la información de pago, la región y el proxy cuando corresponda. Revisá que los datos sean correctos antes de iniciar una tarea.
+
+## Importar cuentas
+
+En **Importar cuentas**, pegá una cuenta por línea. Los formatos admitidos por el programa incluyen:
+
+- `correo----contraseña----correo_recuperacion`
+- `correo----contraseña----clave_2FA`
+- `correo----contraseña----correo_recuperacion----clave_2FA`
+
+## Ejecutar tareas
+
+Desde **Cola de cuentas** podés iniciar, detener, restablecer o eliminar tareas, además de elegir la etapa inicial de ejecución. Los errores y estados se muestran en español en el panel de registros.
+
+## Seguridad
+
+Las contraseñas, claves 2FA, datos de tarjeta, capturas y perfiles del navegador son sensibles. No subas configuraciones, registros o capturas con esos datos a GitHub. Ejecutá el programa únicamente en equipos de confianza.
+
+## Traducción
+
+La interfaz y los mensajes de servidor están en español. El motor traduce los mensajes operativos antes de mostrarlos, pero conserva los textos originales utilizados para reconocer páginas y botones de Google en distintos idiomas.
+
+## Validación
+
+Las comprobaciones automáticas de sintaxis se definen en `.github/workflows/validar-traduccion-es.yml`. La ejecución real de compras o suscripciones no forma parte de esas pruebas.

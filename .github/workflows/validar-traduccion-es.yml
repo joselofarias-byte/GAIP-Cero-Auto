@@ -1,0 +1,31 @@
+name: Validar traduccion GAIP ES
+on:
+  push:
+    branches: [feature/es-completo-20261107]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compilar archivos Python
+        run: python -m compileall -q .
+      - name: Verificar traduccion visible
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          html=Path('templates/index.html').read_text(encoding='utf-8')
+          app=Path('app.py').read_text(encoding='utf-8')
+          assert 'lang="es"' in html
+          assert not re.search(r'[\u3400-\u9fff]',html)
+          assert not re.search(r'[\u3400-\u9fff]',app)
+          engine=Path('automation_engine.py').read_text(encoding='utf-8')
+          assert '_mensaje_es(msg)' in engine
+          assert '_mensaje_es(step_message)' in engine
+          print('Comprobaciones de traduccion superadas')
+          PY
