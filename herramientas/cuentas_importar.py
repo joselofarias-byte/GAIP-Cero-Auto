@@ -39,6 +39,10 @@ def canonical(row):
     email = str(row.get("email") or row.get("correo") or "").strip().lower()
     if not EMAIL.fullmatch(email):
         return None
+    local, sep, domain = email.partition("@")
+    if domain in ("gmail.com", "googlemail.com"):
+        local = local.split("+", 1)[0].replace(".", "")
+        return local + "@gmail.com"
     return email
 
 def atomic_write(path, cfg):
@@ -88,8 +92,19 @@ def main():
         entry = {k: v for k, v in row.items() if k in
                  ("id", "email", "password", "recovery_email", "totp_secret", "status", "notes")}
         entry["email"] = email
-        entry["id"] = str(entry.get("id") or email)
-        entry.setdefault("status", "pendiente")
+        entry["id"] = str(entry.get("id") or f"Account_{len(existing) + len(additions) + 1}")
+        used_ids = {str(x.get("id")) for x in existing + additions}
+        while entry["id"] in used_ids:
+            entry["id"] = "Account_" + str(len(used_ids) + 1)
+        entry.setdefault("recovery_email", "")
+        entry.setdefault("totp_secret", "")
+        entry.setdefault("proxy", "")
+        entry.setdefault("ip_info", "")
+        entry.setdefault("current_step", 0)
+        entry.setdefault("step_message", "Cuenta importada; pendiente de revision")
+        entry.setdefault("expiry_date", "-")
+        entry.setdefault("last_screenshot", "")
+        entry.setdefault("status", "pending")
         additions.append(entry)
     print(json.dumps({"origen": len(incoming), "existentes": len(existing),
                       "nuevas": len(additions), "duplicadas": duplicates,
