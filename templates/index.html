@@ -550,7 +550,8 @@
       <span>🖥️ Registro de automatización en tiempo real (Playwright CDP + Ngbm Interceptor)</span>
       <span style="font-size:12px; color:var(--muted); font-weight:normal;">Si aparece reCAPTCHA, completá la verificación manualmente</span>
     </div>
-    <div class="terminal" id="logTerminal"></div>
+    <div class="terminal" id="logTerminal"><div class="log-line">Conectando con el servidor de automatización...</div></div>
+    <div id="logConnectionStatus" role="status" aria-live="polite" style="padding:8px 12px;font-size:12px;">Esperando conexión...</div>
   </div>
 
   <!-- Screenshot Modal -->
@@ -573,7 +574,9 @@
     async function fetchState() {
       try {
         const res = await fetch('/api/state');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
+        document.getElementById('logConnectionStatus').textContent = 'Conectado · Última actualización: ' + new Date().toLocaleTimeString() + ' · ' + (data.logs || []).length + ' registros';
 
         if (!configInitialized) {
           document.getElementById('cfgTargetRegion').value = data.target_region || 'US';
@@ -602,6 +605,10 @@
           `Total: ${total} | Completadas: ${done} | En ejecución: ${running}`;
       } catch (e) {
         console.error('State poll error:', e);
+        const status = document.getElementById('logConnectionStatus');
+        if (status) status.textContent = 'Error de conexión con /api/state: ' + e.message;
+        const terminal = document.getElementById('logTerminal');
+        if (terminal && !terminal.textContent.trim()) terminal.textContent = 'No se pudieron recuperar los registros. Revisá el servidor local.';
       }
     }
 
@@ -716,13 +723,13 @@
     function renderLogs(logs) {
       const term = document.getElementById('logTerminal');
       const isAtBottom = term.scrollHeight - term.clientHeight <= term.scrollTop + 40;
-      term.innerHTML = logs.map(line => {
+      term.innerHTML = logs.length ? logs.map(line => {
         let cls = 'log-line';
         if (line.includes('⚠️') || line.includes('verificación humana')) cls += ' log-warn';
         else if (line.includes('❌') || line.includes('error')) cls += ' log-err';
         else if (line.includes('✅') || line.includes('🎉')) cls += ' log-ok';
         return `<div class="${cls}">${escapeHtml(line)}</div>`;
-      }).join('');
+      }).join('') : '<div class="log-line">Servidor conectado, sin registros todavía.</div>';
       if (isAtBottom) {
         term.scrollTop = term.scrollHeight;
       }
