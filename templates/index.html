@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Google AI Ultra (5x / 20x) 全自动一条龙控制台</title>
+  <title>Google AI Ultra (5x / 20x) Panel de automatización</title>
   <style>
     :root {
       --bg: #0b0f19;
@@ -380,24 +380,24 @@
   <div class="header">
     <div class="header-left">
       <h1>
-        🚀 Google AI Pro (5 TB) 零成本两年全自动控制台
-        <span class="badge-pro">US$0.00 零消费 · 叠满 24个月 (2028-10) · 自动退订锁死</span>
+        🚀 Google AI Pro (5 TB) Panel Google AI Pro
+        <span class="badge-pro">US$0.00 零消费 · 叠满 24个月 (2028-10) · Cancelar renovación automática</span>
       </h1>
-      <p>支持普通白号 / 2FA 号（自动填号密 + 辅助邮箱 / 2FA 验证码），全自动完成：登录验证 ➔ 首层 12M 免费 ($0) ➔ 二层 6M 免费叠加 ($0) ➔ 三层 6M 免费封顶 24个月 ($0) ➔ Play 自动退订锁死</p>
+      <p>支持普通白号 / 2FA 号（自动填号密 + 辅助邮箱 / 2FA 验证码），全自动完成：登录验证 ➔ 首层 12M 免费 ($0) ➔ 二层 6M 免费叠加 ($0) ➔ 三层 6M 免费封顶 24个月 ($0) ➔ Play Cancelar renovación automática</p>
     </div>
     <div class="header-actions">
       <select id="batchStartStep" title="批量执行的起始步骤">
-        <option value="1">从 Step 1 开始 (全流程零成本叠满2年 + 退订)</option>
-        <option value="2">从 Step 2 开始 (已登录，直接跑三层 $0 叠加)</option>
-        <option value="3">从 Step 3 开始 (已有12M，继续跑二层+三层 $0 叠加)</option>
-        <option value="4">从 Step 4 开始 (已有18M，跑最后一层封顶24M + 退订)</option>
-        <option value="5">从 Step 5 开始 (仅去 Google Play 取消自动续订)</option>
+        <option value="1">Desde el paso 1 (全流程零成本叠满2年 + 退订)</option>
+        <option value="2">Desde el paso 2 (已登录，直接跑三层 $0 叠加)</option>
+        <option value="3">Desde el paso 3 (已有12M，继续跑二层+三层 $0 叠加)</option>
+        <option value="4">Desde el paso 4 (已有18M，跑最后一层封顶24M + 退订)</option>
+        <option value="5">Desde el paso 5 (仅去 Google Play 取消自动续订)</option>
       </select>
       <button class="btn-success" id="btnBatchRun" onclick="runBatch()">
-        ▶ 一键全自动跑所有待执行账号
+        ▶ 一键全自动跑所有Pendiente账号
       </button>
       <button class="btn-danger" onclick="stopAll()">
-        ⏹ 停止任务
+        ⏹ Detener tareas
       </button>
     </div>
   </div>
@@ -405,7 +405,7 @@
   <!-- 5-Step Pipeline Overview -->
   <div class="pipeline-bar">
     <div class="pipe-item">
-      <strong>Step 1 · 登录与过验证</strong>
+      <strong>Step 1 · Inicio de sesión y verificación</strong>
       <span>自动填号密 + 辅助邮箱 / 2FA 动态码</span>
     </div>
     <div class="pipe-item">
@@ -421,7 +421,7 @@
       <span>Pixel 6M + YT 试用 Mode 5 叠满 24个月 (2028-10)</span>
     </div>
     <div class="pipe-item">
-      <strong>Step 5 · 自动退订锁死</strong>
+      <strong>Step 5 · Cancelar renovación automática</strong>
       <span>Play 商店取消续订，全程 US$0.00 截图存证</span>
     </div>
   </div>
@@ -431,8 +431,8 @@
     <!-- Left: Global Plan & Card Config -->
     <div class="card">
       <div class="card-title">
-        <span>⚙️ 全局免税区、零成本两年 Pro 方案与银行卡配置</span>
-        <button class="btn-sm" onclick="saveConfig()">💾 保存配置</button>
+        <span>⚙️ Configuración general: región, plan y tarjeta</span>
+        <button class="btn-sm" onclick="saveConfig()">💾 Guardar configuración</button>
       </div>
       <div class="form-grid">
         <div class="form-group col-2">
@@ -442,36 +442,36 @@
           </select>
         </div>
         <div class="form-group col-2">
-          <label>🎯 目标执行方案</label>
+          <label>🎯 Plan de ejecución</label>
           <select id="cfgTargetPlan">
             <option value="pro_2year_zero">🎁 零成本叠加两年 Google AI Pro (5 TB) — 全程 US$0.00 叠满 24 个月至 2028-10</option>
           </select>
         </div>
         <div class="form-group col-2">
-          <label>卡号 (支持 Visa / Mastercard 外币卡，仅用于 $0.00 试用验证)</label>
+          <label>Número de tarjeta (Visa/Mastercard)</label>
           <input type="text" id="cfgCardNumber" placeholder="请填写您的 Visa / Mastercard 卡号 (16位)" />
         </div>
         <div class="form-group">
-          <label>有效期 (月 / 年)</label>
+          <label>Vencimiento (mes/año)</label>
           <div style="display:flex; gap:6px;">
             <input type="text" id="cfgExpMonth" placeholder="月 (如 08)" style="width:50%;" />
             <input type="text" id="cfgExpYear" placeholder="年 (如 29)" style="width:50%;" />
           </div>
         </div>
         <div class="form-group">
-          <label>安全码 (CVC)</label>
+          <label>Código de seguridad (CVC)</label>
           <input type="text" id="cfgCvc" placeholder="3位安全码" />
         </div>
         <div class="form-group">
-          <label>持卡人姓名</label>
+          <label>Titular de la tarjeta</label>
           <input type="text" id="cfgHolder" placeholder="英文姓名 (如 ZHANG SAN)" />
         </div>
         <div class="form-group col-2">
-          <label>账单地址 (Address Line 1)</label>
+          <label>Dirección de facturación</label>
           <input type="text" id="cfgAddr" placeholder="700 SW 5th Ave" />
         </div>
         <div class="form-group">
-          <label>免税邮编 / 州</label>
+          <label>Código postal / estado</label>
           <div style="display:flex; gap:6px;">
             <input type="text" id="cfgZip" placeholder="97201" style="width:45%;" />
             <input type="text" id="cfgProvince" placeholder="OR" style="width:55%;" />
@@ -479,8 +479,8 @@
         </div>
         <div class="form-group col-4">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label>🛡️ 全局代理模板（留空默认直接使用本机当前美区网络；如需使用代理可粘贴）</label>
-            <button type="button" class="btn-sm btn-secondary" onclick="testProxyNow()" id="btnTestProxy">🔍 测试代理连通性</button>
+            <label>🛡️ Proxy global（留空默认直接使用本机当前美区网络；如需使用代理可粘贴）</label>
+            <button type="button" class="btn-sm btn-secondary" onclick="testProxyNow()" id="btnTestProxy">🔍 Probar conexión del proxy</button>
           </div>
           <input
             type="text"
@@ -501,16 +501,19 @@
     <!-- Right: Bulk Account Import -->
     <div class="card" style="display:flex; flex-direction:column;">
       <div class="card-title">
-        <span>📥 批量放号导入区（支持任意分隔符，自动识别辅助邮箱与 2FA 密钥）</span>
-        <button class="btn-sm btn-success" onclick="importAccounts()">➕ 一键导入账号列表</button>
+        <span>📥 Importación de cuentas (correo, contraseña, recuperación y 2FA)</span>
+        <button class="btn-sm btn-success" onclick="importAccounts()">➕ Importar cuentas</button>
       </div>
+      <label for="importFile" style="font-weight:600;margin:8px 0 6px;">Seleccionar archivo TXT o CSV desde Descargas</label>
+      <input type="file" id="importFile" accept=".txt,.csv,text/plain,text/csv" onchange="loadImportFile(event)" style="width:100%;margin-bottom:8px;" />
+      <div id="importFileStatus" role="status" aria-live="polite" style="font-size:12px;margin-bottom:8px;color:var(--muted);">También podés pegar las cuentas directamente en el cuadro editable de abajo.</div>
       <textarea
         id="importText"
         style="flex:1; width:100%; resize:none; font-family:Consolas,monospace; font-size:12.5px;"
-        placeholder="每行放一个账号，支持 ----、/、—、|、空格 等任意分隔符：&#10;邮箱----密码----辅助邮箱&#10;邮箱/密码/辅助邮箱/2FA密钥&#10;邮箱—密码—辅助邮箱&#10;邮箱----密码----2FA密钥"
+        placeholder="Una cuenta por línea: correo@gmail.com----contraseña"
       ></textarea>
       <div style="font-size:12px; color:var(--muted); margin-top:8px;">
-        💡 提示：无 2FA 白号（带辅助邮箱）与 2FA 号均可直接导入一键全自动执行！
+        💡 Nota: 无 2FA 白号（带辅助邮箱）与 2FA 号均可直接导入一键全自动执行！
       </div>
     </div>
   </div>
@@ -518,21 +521,21 @@
   <!-- Accounts Table Card -->
   <div class="card" style="margin-bottom: 18px;">
     <div class="card-title">
-      <span>📋 账号队列与实时进度监控（点击 2FA 动态码可一键复制）</span>
-      <span id="summaryStats" style="font-size:12.5px; color:var(--muted); font-weight:normal;">加载中...</span>
+      <span>📋 Cuentas y progreso en tiempo real (clic en 2FA para copiar)</span>
+      <span id="summaryStats" style="font-size:12.5px; color:var(--muted); font-weight:normal;">Cargando...</span>
     </div>
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th style="width:85px;">编号</th>
-            <th style="width:250px;">Google 邮箱 / 密码 / 辅助邮箱</th>
-            <th style="width:140px;">验证方式 / 2FA</th>
-            <th style="width:110px;">状态</th>
+            <th style="width:85px;">N.º</th>
+            <th style="width:250px;">Google Correo / contraseña / recuperación</th>
+            <th style="width:140px;">Verificación / 2FA</th>
+            <th style="width:110px;">Estado</th>
             <th style="width:320px;">5 步零成本两年 Pro 流水线进度</th>
-            <th style="width:155px;">当前到期日</th>
-            <th style="width:75px;">核验图</th>
-            <th>单号控制操作</th>
+            <th style="width:155px;">Vencimiento</th>
+            <th style="width:75px;">Captura</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody id="accountsTbody"></tbody>
@@ -543,7 +546,7 @@
   <!-- Live Logs Terminal -->
   <div class="card">
     <div class="card-title">
-      <span>🖥️ 实时自动化执行日志 (Playwright CDP + Ngbm Interceptor)</span>
+      <span>🖥️ Registro de automatización en tiempo real (Playwright CDP + Ngbm Interceptor)</span>
       <span style="font-size:12px; color:var(--muted); font-weight:normal;">遇到绑卡 reCAPTCHA 人机验证时会自动弹窗提醒您点一下复选框，点完自动继续</span>
     </div>
     <div class="terminal" id="logTerminal"></div>
@@ -554,7 +557,7 @@
     <div class="modal-box" onclick="event.stopPropagation()">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <strong id="modalTitle">核验截图预览</strong>
-        <button class="btn-sm btn-secondary" onclick="closeModal()">✖ 关闭</button>
+        <button class="btn-sm btn-secondary" onclick="closeModal()">✖ Cerrar</button>
       </div>
       <img id="modalImg" src="" alt="screenshot" />
     </div>
@@ -595,7 +598,7 @@
         const done = (data.accounts || []).filter(a => a.status === 'completed').length;
         const running = data.active_count || 0;
         document.getElementById('summaryStats').textContent =
-          `共 ${total} 个账号 | 已完成: ${done} | 运行中: ${running}`;
+          `共 ${total} 个账号 | Completado: ${done} | 运行中: ${running}`;
       } catch (e) {
         console.error('State poll error:', e);
       }
@@ -603,12 +606,12 @@
 
     function statusBadgeHtml(status) {
       const map = {
-        pending: ['status-pending', '⏳ 待执行'],
-        running: ['status-running', '⚡ 执行中'],
+        pending: ['status-pending', '⏳ Pendiente'],
+        running: ['status-running', '⚡ En ejecución'],
         waiting_human: ['status-waiting_human', '🖐️ 等点人机验证'],
-        completed: ['status-completed', '✅ 已完成'],
+        completed: ['status-completed', '✅ Completado'],
         error: ['status-error', '❌ 异常中断'],
-        stopped: ['status-pending', '⏹ 已停止']
+        stopped: ['status-pending', '⏹ Detenido']
       };
       const [cls, label] = map[status] || ['status-pending', status];
       return `<span class="status-badge ${cls}">${label}</span>`;
@@ -631,15 +634,15 @@
       tbody.innerHTML = accounts.map(acc => {
         const savedStart = selectedStartSteps[acc.id] || 1;
         const shotBtn = acc.last_screenshot
-          ? `<button class="btn-sm btn-secondary" onclick="showScreenshot('${acc.id}', '${acc.last_screenshot}')">🖼 查看</button>`
+          ? `<button class="btn-sm btn-secondary" onclick="showScreenshot('${acc.id}', '${acc.last_screenshot}')">🖼 Ver</button>`
           : `<span style="color:var(--muted);font-size:12px;">-</span>`;
 
         const totpHtml = (acc.totp_secret && acc.totp_now && acc.totp_now !== '------')
-          ? `<div class="totp-pill" onclick="copyText('${acc.totp_now}')" title="点击复制 6 位动态验证码">
+          ? `<div class="totp-pill" onclick="copyText('${acc.totp_now}')" title="点击Copiar 6 位动态验证码">
                <span>${acc.totp_now}</span>
                <span class="totp-rem">${acc.totp_rem}s</span>
              </div>`
-          : `<span style="font-size:12px; color:#34d399;">📧 辅助邮箱验证</span>`;
+          : `<span style="font-size:12px; color:#34d399;">📧 Correo de recuperación</span>`;
 
         return `
           <tr>
@@ -680,27 +683,27 @@
                   class="btn-sm ${acc.is_running ? 'btn-danger' : 'btn-success'}"
                   onclick="${acc.is_running ? `stopSingle('${acc.id}')` : `runSingle('${acc.id}')`}"
                 >
-                  ${acc.is_running ? '⏹ 停止' : '▶ 启动一条龙'}
+                  ${acc.is_running ? '⏹ Detener' : '▶ 启动一条龙'}
                 </button>
                 <button
                   class="btn-sm ${openedBrowserMap[acc.id] ? 'btn-success' : 'btn-secondary'}"
                   onclick="openBrowser('${acc.id}')"
-                  title="手动打开该账号的独立 Chrome 窗口"
+                  title="Abrir ventana Chrome de esta cuenta"
                 >
-                  ${openedBrowserMap[acc.id] ? '✅ 已打开' : '🌐 浏览器'}
+                  ${openedBrowserMap[acc.id] ? '✅ Abierto' : '🌐 Navegador'}
                 </button>
-                <button class="btn-sm btn-secondary" onclick="resetAccount('${acc.id}')" title="重置状态为待执行">
+                <button class="btn-sm btn-secondary" onclick="resetAccount('${acc.id}')" title="重置Estado为Pendiente">
                   🔄
                 </button>
-                <button class="btn-sm btn-secondary" onclick="deleteAccount('${acc.id}')" title="移除此账号">
+                <button class="btn-sm btn-secondary" onclick="deleteAccount('${acc.id}')" title="Eliminar cuenta">
                   🗑️
                 </button>
                 <button
                   class="btn-sm ${copiedAccountMap[acc.id] ? 'btn-success' : 'btn-secondary'}"
                   onclick="copyAccountFull('${acc.id}', '${acc.email}', '${acc.password}', '${acc.totp_secret || acc.recovery_email || ''}')"
-                  title="一键复制账号信息"
+                  title="Copiar datos de cuenta"
                 >
-                  ${copiedAccountMap[acc.id] ? '✅ 已复制' : '📋 复制'}
+                  ${copiedAccountMap[acc.id] ? '✅ 已Copiar' : '📋 Copiar'}
                 </button>
               </div>
             </td>
@@ -738,9 +741,9 @@
       const btn = document.getElementById('btnTestProxy');
       const resBox = document.getElementById('proxyTestResult');
       btn.disabled = true;
-      btn.textContent = '⏳ 正在检测出口 IP...';
+      btn.textContent = '⏳ Comprobando IP de salida...';
       resBox.style.color = '#38bdf8';
-      resBox.textContent = '正在测试代理连通性...';
+      resBox.textContent = '正在Probar conexión del proxy...';
       try {
         const region = document.getElementById('cfgTargetRegion').value;
         const tpl = document.getElementById('cfgProxyTemplate').value.trim();
@@ -759,10 +762,10 @@
         }
       } catch (e) {
         resBox.style.color = '#f87171';
-        resBox.textContent = '❌ 请求异常: ' + e;
+        resBox.textContent = '❌ Error de solicitud: ' + e;
       } finally {
         btn.disabled = false;
-        btn.textContent = '🔍 测试代理连通性';
+        btn.textContent = '🔍 Probar conexión del proxy';
         fetchState();
       }
     }
@@ -794,9 +797,23 @@
       fetchState();
     }
 
+    async function loadImportFile(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const status = document.getElementById('importFileStatus');
+      try {
+        const content = await file.text();
+        if (!content.trim()) throw new Error('El archivo está vacío');
+        document.getElementById('importText').value = content;
+        status.textContent = 'Archivo cargado: ' + file.name + '. Revisá el contenido y pulsá Importar cuentas.';
+      } catch (error) {
+        status.textContent = 'No se pudo leer el archivo: ' + error.message;
+      }
+    }
+
     async function importAccounts() {
       const raw = document.getElementById('importText').value.trim();
-      if (!raw) return alert('请先在文本框中粘贴要导入的账号！');
+      if (!raw) return alert('Pegá cuentas en el cuadro o seleccioná un archivo TXT/CSV.');
       const res = await fetch('/api/accounts/import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -805,7 +822,10 @@
       const data = await res.json();
       if (data.ok) {
         document.getElementById('importText').value = '';
+        document.getElementById('importFileStatus').textContent = 'Importación terminada: ' + data.added + ' nuevas; ' + data.total + ' cuentas en total.';
         fetchState();
+      } else {
+        alert('Error al importar cuentas');
       }
     }
 
@@ -834,7 +854,7 @@
       });
       if (!res.ok) {
         const err = await res.json();
-        alert(err.detail || '启动失败');
+        alert(err.detail || 'No se pudo iniciar');
       }
       fetchState();
     }
@@ -850,7 +870,7 @@
       });
       if (!res.ok) {
         const err = await res.json();
-        alert(err.detail || '批量启动失败');
+        alert(err.detail || '批量No se pudo iniciar');
       }
       fetchState();
     }
@@ -893,7 +913,7 @@
     }
 
     async function deleteAccount(accountId) {
-      if (!confirm(`确定要从列表中移除账号 ${accountId} 吗？`)) return;
+      if (!confirm(`¿Eliminar la cuenta ${accountId}?`)) return;
       await fetch('/api/accounts/delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
