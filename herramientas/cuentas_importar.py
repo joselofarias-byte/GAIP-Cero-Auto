@@ -35,8 +35,11 @@ def read_accounts(path):
                      "recovery_email": fields[2].strip() if len(fields)>2 else ""})
     return rows
 
+def raw_email(row):
+    return str(row.get("email") or row.get("correo") or "").strip().lower()
+
 def canonical(row):
-    email = str(row.get("email") or row.get("correo") or "").strip().lower()
+    email = raw_email(row)
     if not EMAIL.fullmatch(email):
         return None
     local, sep, domain = email.partition("@")
@@ -62,7 +65,7 @@ def atomic_write(path, cfg):
 def main():
     p = argparse.ArgumentParser(description="Inventario y migracion local sin duplicados")
     p.add_argument("--source", required=True, help="Archivo TXT/CSV/JSON de cuentas propias")
-    p.add_argument("--config", default=str(Path(__file__).resolve().parent / "config.json"))
+    p.add_argument("--config", default=str(Path(__file__).resolve().parent.parent / "config.json"))
     p.add_argument("--apply", action="store_true", help="Aplicar importacion; por defecto solo auditoria")
     p.add_argument("--verified-only", action="store_true", help="Importar solo filas con verified=true")
     args = p.parse_args()
@@ -91,7 +94,7 @@ def main():
         # Conserva los campos admitidos por la configuracion original.
         entry = {k: v for k, v in row.items() if k in
                  ("id", "email", "password", "recovery_email", "totp_secret", "status", "notes")}
-        entry["email"] = email
+        entry["email"] = raw_email(row)
         entry["id"] = str(entry.get("id") or f"Account_{len(existing) + len(additions) + 1}")
         used_ids = {str(x.get("id")) for x in existing + additions}
         while entry["id"] in used_ids:
@@ -110,7 +113,7 @@ def main():
                       "nuevas": len(additions), "duplicadas": duplicates,
                       "invalidas": invalid, "no_verificadas": unverified,
                       "modo": "APLICAR" if args.apply else "AUDITORIA"}, ensure_ascii=False))
-    if not args.apply:
+    if not args.apply or not additions:
         return
     if target.exists():
         stamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
