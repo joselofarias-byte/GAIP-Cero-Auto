@@ -13,6 +13,14 @@ import time
 from typing import Callable, Dict, Any, Optional
 from playwright.async_api import async_playwright
 
+
+# Traducción de mensajes de diagnóstico sin modificar selectores de Google.
+_LOG_ES = {"正在": "Procesando: ","检测到": "Detectado: ","正在自动": "Automáticamente: ","正在点击": "Haciendo clic: ","正在打开": "Abriendo: ","正在等待": "Esperando: ","正在重试": "Reintentando: ","已点击": "Se hizo clic en ","已保存": "Guardado: ","成功": "Correcto","失败": "Error","异常": "Error","账号": "cuenta","登录": "inicio de sesión","密码": "contraseña","辅助邮箱": "correo de recuperación","动态验证码": "código temporal","验证": "verificación","人机验证": "verificación humana","订阅": "suscripción","付款方式": "método de pago","银行卡": "tarjeta bancaria","截图": "captura","页面": "página","跳转": "redirección","重试": "reintento","等待": "espera","继续": "continuar","取消": "cancelar","完成": "completado","正在执行": "Ejecutando","已停止": "Detenido","任务": "tarea","点击": "clic","按钮": "botón","输入": "introducir","弹窗": "ventana emergente","自动": "automático","邮箱": "correo","网络": "red","代理": "proxy","保存": "guardar","确认": "confirmar","安全": "seguridad","刷新": "actualizar","提示": "aviso","错误": "error","检查": "comprobar","浏览器": "navegador","加载": "cargar","未能": "No se pudo","重新": "de nuevo","开始": "iniciar","结束": "finalizar","状态": "estado","获取": "obtener","信息": "información","账号选择器": "selector de cuentas","新设备": "nuevo dispositivo","身份": "identidad","需要": "se requiere","设置": "configuración","秒": "segundos","分": "minutos","已": "","的": " ","后": " después","前": " antes","请": "por favor","将": "","并": " y ","在": " en ","到": " a ","中": "","为": " para ","与": " y ","或": " o ","了": "","可": "puede","不": "no","第": "n.º ","个": "","次": "vez","步": "paso"}
+def _mensaje_es(texto: str) -> str:
+    for origen, destino in _LOG_ES.items():
+        texto = texto.replace(origen, destino)
+    return texto
+
 def _find_chrome_path() -> str:
     candidates = [
         r"C:\Program Files\Google\Chrome\Application\chrome.exe",
@@ -489,7 +497,7 @@ class GoogleUltraAutomator:
 
     def log(self, msg: str):
         ts = time.strftime("%H:%M:%S")
-        line = f"[{ts}] [{self.account['id']}] {msg}"
+        line = f"[{ts}] [{self.account['id']}] {_mensaje_es(msg)}"
         self.on_log(line)
 
     def update_state(
@@ -509,8 +517,8 @@ class GoogleUltraAutomator:
             self.account["current_step"] = current_step
             patch["current_step"] = current_step
         if step_message is not None:
-            self.account["step_message"] = step_message
-            patch["step_message"] = step_message
+            self.account["step_message"] = _mensaje_es(step_message)
+            patch["step_message"] = _mensaje_es(step_message)
         if expiry_date is not None:
             self.account["expiry_date"] = expiry_date
             patch["expiry_date"] = expiry_date
@@ -1709,6 +1717,7 @@ class GoogleUltraAutomator:
             CHROME_PATH,
             f"--remote-debugging-port={self.port}",
             f"--user-data-dir={user_data_dir}",
+            "--lang=es-ES",
             "--no-first-run",
             "--no-default-browser-check",
             "--disable-popup-blocking",
