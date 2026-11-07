@@ -13,6 +13,14 @@ import time
 from typing import Callable, Dict, Any, Optional
 from playwright.async_api import async_playwright
 
+
+# Traducción de mensajes visibles. Los selectores de Google se conservan intactos.
+_LOG_ES = {"用户手动停止了任务":"El usuario detuvo la tarea","住宅代理网络波动":"Conexión inestable del proxy residencial","正在自动切换同国住宅节点并重试":"Cambiando el nodo del proxy y reintentando","动态码即将刷新":"El código temporal está por actualizarse","检测到 gds.google.com 辅助信息提示页":"Se detectó una página de información adicional de Google","检测到 confirmidentifier 页面":"Se detectó una página de confirmación de identidad","检测到登录邮箱输入框":"Se encontró el campo de correo","检测到安全验证按钮":"Se encontró el botón de verificación de seguridad","正在自动输入密码通过身份验证":"Introduciendo contraseña para verificar identidad","检测到登录人机验证框":"Se detectó una verificación CAPTCHA","检测到弹窗选项":"Se detectó una opción de diálogo","选择 Google 身份验证器验证方式":"Seleccionando Google Authenticator","检测到其他验证方式页面":"Se detectaron otros métodos de verificación","正在自动填入辅助邮箱完成验证":"Introduciendo correo de recuperación","检测到新设备安全拦截页":"Se detectó una comprobación de seguridad de dispositivo nuevo","正在自动填入 2FA 动态验证码":"Introduciendo código 2FA","正在登录 Google 账号并自动过验证":"Iniciando sesión y completando verificación de Google","检查 Google 登录状态":"Comprobando inicio de sesión de Google","在账号选择器中点选账号":"Seleccionando cuenta","登录页响应较慢":"La página de acceso responde lentamente","当前读取到的 24 位订阅 ID":"Identificador de suscripción detectado","未能从页面静态 HTML 提取到 24 位订阅 ID":"No se pudo obtener el identificador de suscripción del HTML","检测到当前订阅处于":"Se detectó que la suscripción está","正在点击":"Haciendo clic","正在打开":"Abriendo","正在等待":"Esperando","正在执行":"Ejecutando","正在检查":"Comprobando","正在尝试":"Intentando","检测到":"Detectado: ","已点击":"Se hizo clic: ","已完成":"Completado: ","已保存":"Guardado: ","失败":"Error","成功":"Correcto","登录":"Inicio de sesión","账号":"Cuenta","验证码":"Código de verificación","辅助邮箱":"Correo de recuperación","密码":"Contraseña","验证":"Verificación","订阅":"Suscripción","支付":"Pago","银行卡":"Tarjeta","付款方式":"Método de pago","截图":"Captura","页面":"Página","弹窗":"Ventana emergente","继续":"Continuar","取消":"Cancelar","重新":"Reintentar","保存":"Guardar","网络":"Red","代理":"Proxy","步骤":"Paso","自动":"Automático","正在":"Procesando","等待":"Esperando","状态":"Estado","错误":"Error","重试":"Reintentar","点击":"Clic","输入":"Introducir","检测":"Comprobar","提示":"Aviso","确认":"Confirmar","安全":"Seguridad","信息":"Información","浏览器":"Navegador","获取":"Obtener","刷新":"Actualizar","开始":"Iniciar","结束":"Finalizar","任务":"Tarea","完成":"Completado","设置":"Configuración","秒":"segundos"}
+def _mensaje_es(texto: str) -> str:
+    for origen, destino in _LOG_ES.items():
+        texto = texto.replace(origen, destino)
+    return texto
+
 def _find_chrome_path() -> str:
     candidates = [
         r"C:\Program Files\Google\Chrome\Application\chrome.exe",
@@ -489,7 +497,7 @@ class GoogleUltraAutomator:
 
     def log(self, msg: str):
         ts = time.strftime("%H:%M:%S")
-        line = f"[{ts}] [{self.account['id']}] {msg}"
+        line = f"[{ts}] [{self.account['id']}] {_mensaje_es(msg)}"
         self.on_log(line)
 
     def update_state(
@@ -509,8 +517,8 @@ class GoogleUltraAutomator:
             self.account["current_step"] = current_step
             patch["current_step"] = current_step
         if step_message is not None:
-            self.account["step_message"] = step_message
-            patch["step_message"] = step_message
+            self.account["step_message"] = _mensaje_es(step_message)
+            patch["step_message"] = _mensaje_es(step_message)
         if expiry_date is not None:
             self.account["expiry_date"] = expiry_date
             patch["expiry_date"] = expiry_date
@@ -758,7 +766,7 @@ class GoogleUltraAutomator:
 
         await self.safe_goto(
             page,
-            "https://accounts.google.com/ServiceLogin?hl=zh-CN&continue=https%3A%2F%2Fone.google.com%2Fplans%3Fhl%3Dzh-CN",
+            "https://accounts.google.com/ServiceLogin?hl=es&continue=https%3A%2F%2Fone.google.com%2Fplans%3Fhl%3Des",
             timeout=40000,
         )
         await asyncio.sleep(3.5)
@@ -840,7 +848,7 @@ class GoogleUltraAutomator:
                 self.log("⚠️ 登录页响应较慢，正在重试登录提交流程...")
                 await self.safe_goto(
                     page,
-                    "https://accounts.google.com/ServiceLogin?hl=zh-CN&continue=https%3A%2F%2Fone.google.com%2Fplans%3Fhl%3Dzh-CN",
+                    "https://accounts.google.com/ServiceLogin?hl=es&continue=https%3A%2F%2Fone.google.com%2Fplans%3Fhl%3Des",
                     timeout=40000,
                 )
                 await asyncio.sleep(3.5)
@@ -850,9 +858,9 @@ class GoogleUltraAutomator:
 
     async def get_current_sub_id(self, page) -> Optional[str]:
         for url in (
-            "https://one.google.com/settings?expand=upgrade&hl=zh-CN",
-            "https://one.google.com/plans?hl=zh-CN",
-            "https://one.google.com/ai-nye?g1_landing_page=0&hl=zh-CN",
+            "https://one.google.com/settings?expand=upgrade&hl=es",
+            "https://one.google.com/plans?hl=es",
+            "https://one.google.com/ai-nye?g1_landing_page=0&hl=es",
         ):
             await self.safe_goto(page, url, timeout=40000)
             for _ in range(6):
@@ -877,7 +885,7 @@ class GoogleUltraAutomator:
         return None
 
     async def inspect_play_subscriptions(self, page) -> str:
-        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=zh-CN", timeout=40000)
+        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=es", timeout=40000)
         await asyncio.sleep(3)
         if "accounts.google.com" in page.url or "gds.google.com" in page.url:
             await self.pass_reauth_on_page(page)
@@ -888,7 +896,7 @@ class GoogleUltraAutomator:
 
     async def ensure_subscription_active(self, page):
         """If the account has a cancelled subscription ('重新订阅'), click Resubscribe so Mode 5 stacking works."""
-        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=zh-CN", timeout=40000)
+        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=es", timeout=40000)
         await asyncio.sleep(3.5)
         if "accounts.google.com" in page.url or "gds.google.com" in page.url:
             await self.pass_reauth_on_page(page)
@@ -1106,8 +1114,8 @@ class GoogleUltraAutomator:
         target_fr = None
         clean_txt = ""
 
-        # Primary trigger: one.google.com/plans?hl=zh-CN clicking the LAST action button (proven 100% reliable across L1, L2, L3)
-        for attempt_url in ("https://one.google.com/plans?hl=zh-CN",) * 5:
+        # Primary trigger: one.google.com/plans?hl=es clicking the LAST action button (proven 100% reliable across L1, L2, L3)
+        for attempt_url in ("https://one.google.com/plans?hl=es",) * 5:
             if target_fr:
                 break
             self.log(f"[{step_tag}] 正在打开方案页面触发 Ngbm 结账弹窗: {attempt_url}")
@@ -1569,7 +1577,7 @@ class GoogleUltraAutomator:
         self.update_state(status="running", current_step=5, step_message="Step 5/5: 正在自动取消续订并锁死 2028 年到期日 (US$0.00 验真截图)...")
         self.log("=== Step 5/5: 自动取消自动续订 & 截取最终 2028 年到期日凭证 ===")
 
-        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=zh-CN", timeout=40000)
+        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=es", timeout=40000)
         await asyncio.sleep(4)
         play_txt = await page.inner_text("body")
 
@@ -1643,7 +1651,7 @@ class GoogleUltraAutomator:
             await asyncio.sleep(3)
 
         # Final verification on Play Subscriptions
-        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=zh-CN", timeout=40000)
+        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=es", timeout=40000)
         await asyncio.sleep(3.5)
         final_shot = await self.save_screenshot(page, "step5_final_verified")
         final_txt = " | ".join([l.strip() for l in (await page.inner_text("body")).splitlines() if l.strip()])
@@ -1709,6 +1717,7 @@ class GoogleUltraAutomator:
             CHROME_PATH,
             f"--remote-debugging-port={self.port}",
             f"--user-data-dir={user_data_dir}",
+            "--lang=es-ES",
             "--no-first-run",
             "--no-default-browser-check",
             "--disable-popup-blocking",
