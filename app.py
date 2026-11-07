@@ -145,7 +145,7 @@ async def test_proxy(req: ProxyTestReq):
     region = (req.target_region or cfg.get("target_region") or "TR").upper()
     resolved = resolve_account_proxy({"id": f"probe{int(time.time())%1000}", "email": "probe@gmail.com"}, region, tpl)
     if not resolved:
-        return {"ok": False, "message": "未填写Proxy"}
+        return {"ok": False, "message": "Sin configurarProxy"}
 
     def _sync_probe():
         import urllib.request
@@ -511,6 +511,7 @@ async def open_browser_manual(req: AccountActionReq):
             p_url = f"{parsed_proxy['scheme']}://{parsed_proxy['host']}:{parsed_proxy['port']}"
             chrome_args.append(f"--proxy-server={p_url}")
 
+    chrome_args.append("--lang=es-ES")
     chrome_args.extend(
         [
             "https://one.google.com/plans?hl=es",
