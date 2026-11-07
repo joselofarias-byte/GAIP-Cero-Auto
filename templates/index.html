@@ -855,36 +855,54 @@
       return true;
     }
 
-    async function runSingle(accountId) {
-      const startPaso = selectedStartSteps[accountId] || 1;
-      if (!validateCardBeforeRun(startStep)) return;
-      await saveConfig();
-      const res = await fetch('/api/run/single', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ account_id: accountId, start_step: startPaso })
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        alert(err.detail || 'No se pudo iniciar');
+    async function ejecutarSolicitud(url, payload, mensajeError) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          const detail = data.detail;
+          const description = typeof detail === 'string' ? detail : JSON.stringify(detail || {});
+          throw new Error(description || mensajeError + ' (HTTP ' + response.status + ')');
+        }
+        await fetchState();
+        return data;
+      } catch (error) {
+        const message = mensajeError + ': ' + (error?.message || String(error));
+        console.error(message, error);
+        alert(message);
+        return null;
       }
-      fetchState();
+    }
+
+    async function runSingle(accountId) {
+      const startPaso = Number(selectedStartSteps[accountId] || 1);
+      if (!validateCardBeforeRun(startPaso)) return;
+      try {
+        await saveConfig();
+      } catch (error) {
+        alert('No se pudo guardar la configuración: ' + error.message);
+        return;
+      }
+      await ejecutarSolicitud('/api/run/single', { account_id: accountId, start_step: startPaso }, 'No se pudo iniciar la cuenta');
     }
 
     async function runBatch() {
-      const startPaso = parseInt(document.getElementById('batchStartStep').value || '1');
-      if (!validateCardBeforeRun(startStep)) return;
-      await saveConfig();
-      const res = await fetch('/api/run/batch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ start_step: startPaso })
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        alert(err.detail || 'No se pudo iniciar el lote');
+      const startPaso = Number(document.getElementById('batchStartStep').value || 1);
+      if (!validateCardBeforeRun(startPaso)) return;
+      const button = document.getElementById('btnBatchRun');
+      button.disabled = true;
+      try {
+        await saveConfig();
+        await ejecutarSolicitud('/api/run/batch', { start_step: startPaso }, 'No se pudo iniciar el lote');
+      } catch (error) {
+        alert('No se pudo guardar la configuración: ' + error.message);
+      } finally {
+        button.disabled = false;
       }
-      fetchState();
     }
 
     async function stopSingle(accountId) {
