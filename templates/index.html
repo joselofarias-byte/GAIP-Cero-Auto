@@ -805,7 +805,7 @@
       try {
         const content = await file.text();
         if (!content.trim()) throw new Error('El archivo está vacío');
-        const candidates = content.split(/\r?\n/).filter(line => /^[^\s@|,;]+@[^\s@|,;]+[|,;\s]|^[^\s@]+@[^\s@]+----/.test(line.trim()));
+        const candidates = content.split(/\r?\n/).filter(line => /[^\s@|,;:]+@[^\s@|,;:]+\.[^\s@|,;:]+(?:----|:|\s|\||,|;|—)/.test(line.trim()));
         if (!candidates.length) {
           throw new Error('No se detectaron cuentas. El archivo debe incluir correo y contraseña por línea.');
         }
