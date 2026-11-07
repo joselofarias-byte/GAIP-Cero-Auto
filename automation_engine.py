@@ -758,7 +758,7 @@ class GoogleUltraAutomator:
 
         await self.safe_goto(
             page,
-            "https://accounts.google.com/ServiceLogin?hl=zh-CN&continue=https%3A%2F%2Fone.google.com%2Fplans%3Fhl%3Dzh-CN",
+            "https://accounts.google.com/ServiceLogin?hl=es&continue=https%3A%2F%2Fone.google.com%2Fplans%3Fhl%3Des",
             timeout=40000,
         )
         await asyncio.sleep(3.5)
@@ -840,7 +840,7 @@ class GoogleUltraAutomator:
                 self.log("⚠️ 登录页响应较慢，正在重试登录提交流程...")
                 await self.safe_goto(
                     page,
-                    "https://accounts.google.com/ServiceLogin?hl=zh-CN&continue=https%3A%2F%2Fone.google.com%2Fplans%3Fhl%3Dzh-CN",
+                    "https://accounts.google.com/ServiceLogin?hl=es&continue=https%3A%2F%2Fone.google.com%2Fplans%3Fhl%3Des",
                     timeout=40000,
                 )
                 await asyncio.sleep(3.5)
@@ -850,9 +850,9 @@ class GoogleUltraAutomator:
 
     async def get_current_sub_id(self, page) -> Optional[str]:
         for url in (
-            "https://one.google.com/settings?expand=upgrade&hl=zh-CN",
-            "https://one.google.com/plans?hl=zh-CN",
-            "https://one.google.com/ai-nye?g1_landing_page=0&hl=zh-CN",
+            "https://one.google.com/settings?expand=upgrade&hl=es",
+            "https://one.google.com/plans?hl=es",
+            "https://one.google.com/ai-nye?g1_landing_page=0&hl=es",
         ):
             await self.safe_goto(page, url, timeout=40000)
             for _ in range(6):
@@ -877,7 +877,7 @@ class GoogleUltraAutomator:
         return None
 
     async def inspect_play_subscriptions(self, page) -> str:
-        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=zh-CN", timeout=40000)
+        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=es", timeout=40000)
         await asyncio.sleep(3)
         if "accounts.google.com" in page.url or "gds.google.com" in page.url:
             await self.pass_reauth_on_page(page)
@@ -888,7 +888,7 @@ class GoogleUltraAutomator:
 
     async def ensure_subscription_active(self, page):
         """If the account has a cancelled subscription ('重新订阅'), click Resubscribe so Mode 5 stacking works."""
-        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=zh-CN", timeout=40000)
+        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=es", timeout=40000)
         await asyncio.sleep(3.5)
         if "accounts.google.com" in page.url or "gds.google.com" in page.url:
             await self.pass_reauth_on_page(page)
@@ -1106,8 +1106,8 @@ class GoogleUltraAutomator:
         target_fr = None
         clean_txt = ""
 
-        # Primary trigger: one.google.com/plans?hl=zh-CN clicking the LAST action button (proven 100% reliable across L1, L2, L3)
-        for attempt_url in ("https://one.google.com/plans?hl=zh-CN",) * 5:
+        # Primary trigger: one.google.com/plans?hl=es clicking the LAST action button (proven 100% reliable across L1, L2, L3)
+        for attempt_url in ("https://one.google.com/plans?hl=es",) * 5:
             if target_fr:
                 break
             self.log(f"[{step_tag}] 正在打开方案页面触发 Ngbm 结账弹窗: {attempt_url}")
@@ -1569,7 +1569,7 @@ class GoogleUltraAutomator:
         self.update_state(status="running", current_step=5, step_message="Step 5/5: 正在自动取消续订并锁死 2028 年到期日 (US$0.00 验真截图)...")
         self.log("=== Step 5/5: 自动取消自动续订 & 截取最终 2028 年到期日凭证 ===")
 
-        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=zh-CN", timeout=40000)
+        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=es", timeout=40000)
         await asyncio.sleep(4)
         play_txt = await page.inner_text("body")
 
@@ -1643,7 +1643,7 @@ class GoogleUltraAutomator:
             await asyncio.sleep(3)
 
         # Final verification on Play Subscriptions
-        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=zh-CN", timeout=40000)
+        await self.safe_goto(page, "https://play.google.com/store/account/subscriptions?hl=es", timeout=40000)
         await asyncio.sleep(3.5)
         final_shot = await self.save_screenshot(page, "step5_final_verified")
         final_txt = " | ".join([l.strip() for l in (await page.inner_text("body")).splitlines() if l.strip()])
