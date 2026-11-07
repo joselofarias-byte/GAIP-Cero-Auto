@@ -292,7 +292,7 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.65; }
     }
-    /* Step Dots */
+    /* Paso Dots */
     .step-dots {
       display: flex;
       gap: 4px;
@@ -402,27 +402,27 @@
     </div>
   </div>
 
-  <!-- 5-Step Pipeline Overview -->
+  <!-- 5-Paso Pipeline Overview -->
   <div class="pipeline-bar">
     <div class="pipe-item">
-      <strong>Step 1 · Inicio de sesión y verificación</strong>
+      <strong>Paso 1 · Inicio de sesión y verificación</strong>
       <span>Correo, contraseña, recuperación y 2FA</span>
     </div>
     <div class="pipe-item">
-      <strong>Step 2 · Primera etapa del plan</strong>
-      <span>12M Pro 5TB + YT Prueba y verificación de pago</span>
+      <strong>Paso 2 · Primera etapa del plan</strong>
+      <span>Plan Pro 5 TB: comprobar oferta y pago</span>
     </div>
     <div class="pipe-item">
-      <strong>Step 3 · Segunda etapa del plan</strong>
-      <span>S25 Pro 6M + YT Comprobar vigencia</span>
+      <strong>Paso 3 · Segunda etapa del plan</strong>
+      <span>Comprobar vigencia del plan</span>
     </div>
     <div class="pipe-item">
-      <strong>Step 4 · Tercera etapa del plan</strong>
-      <span>Pixel 6M + YT Comprobar fecha de vencimiento</span>
+      <strong>Paso 4 · Tercera etapa del plan</strong>
+      <span>Comprobar vencimiento del plan</span>
     </div>
     <div class="pipe-item">
-      <strong>Step 5 · Cancelar renovación automática</strong>
-      <span>Play Cancelar renovación en Play y guardar captura</span>
+      <strong>Paso 5 · Cancelar renovación automática</strong>
+      <span>Cancelar renovación en Google Play y guardar captura</span>
     </div>
   </div>
 
@@ -460,7 +460,7 @@
         </div>
         <div class="form-group">
           <label>Código de seguridad (CVC)</label>
-          <input type="text" id="cfgCvc" placeholder="3Código de 3 dígitos" />
+          <input type="text" id="cfgCvc" placeholder="CVC (3 o 4 dígitos)" />
         </div>
         <div class="form-group">
           <label>Titular de la tarjeta</label>
@@ -479,7 +479,7 @@
         </div>
         <div class="form-group col-4">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label>🛡️ Proxy global（Vacío para conexión local; introducí un proxy si corresponde）</label>
+            <label>🛡️ Proxy global(Vacío para conexión local; introducí un proxy si corresponde)</label>
             <button type="button" class="btn-sm btn-secondary" onclick="testProxyNow()" id="btnTestProxy">🔍 Probar conexión del proxy</button>
           </div>
           <input
@@ -494,7 +494,7 @@
       </div>
       <label class="checkbox-row">
         <input type="checkbox" id="cfgAutoCancel" checked />
-        <span>✅ <strong>Step 5 Cancelar renovación automáticamente</strong>（Abrir Google Play para cancelar la renovación; verificá el resultado）</span>
+        <span>✅ <strong>Paso 5 Cancelar renovación automáticamente</strong>(Abrir Google Play para cancelar la renovación; verificá el resultado)</span>
       </label>
     </div>
 
@@ -509,11 +509,12 @@
       <div id="importFileStatus" role="status" aria-live="polite" style="font-size:12px;margin-bottom:8px;color:var(--muted);">También podés pegar las cuentas directamente en el cuadro editable de abajo.</div>
       <textarea
         id="importText"
+        aria-label="Cuentas para importar: una por línea"
         style="flex:1; width:100%; resize:none; font-family:Consolas,monospace; font-size:12.5px;"
         placeholder="Una cuenta por línea: correo@gmail.com----contraseña"
       ></textarea>
       <div style="font-size:12px; color:var(--muted); margin-top:8px;">
-        💡 Nota: Podés importar cuentas con correo de recuperación o código 2FA！
+        💡 Nota: Podés importar cuentas con correo de recuperación o código 2FA!
       </div>
     </div>
   </div>
@@ -529,10 +530,10 @@
         <thead>
           <tr>
             <th style="width:85px;">N.º</th>
-            <th style="width:250px;">Google Correo / contraseña / recuperación</th>
+            <th style="width:250px;">Correo / contraseña / recuperación</th>
             <th style="width:140px;">Verificación / 2FA</th>
             <th style="width:110px;">Estado</th>
-            <th style="width:320px;">5 Progreso por etapas</th>
+            <th style="width:320px;">Progreso (5 pasos)</th>
             <th style="width:155px;">Vencimiento</th>
             <th style="width:75px;">Captura</th>
             <th>Acciones</th>
@@ -559,7 +560,7 @@
         <strong id="modalTitle">Vista previa de captura</strong>
         <button class="btn-sm btn-secondary" onclick="closeModal()">✖ Cerrar</button>
       </div>
-      <img id="modalImg" src="" alt="screenshot" />
+      <img id="modalImg" src="" alt="Captura de verificación" />
     </div>
   </div>
 
@@ -622,8 +623,8 @@
       for (let s = 1; s <= 5; s++) {
         let cls = '';
         if (status === 'completed' || s < curStep) cls = 'done';
-        else if (s === curStep && (status === 'running' || status === 'waiting_human')) cls = 'active';
-        html += `<div class="step-dot ${cls}" title="Step ${s}">${s}</div>`;
+        else if (s === curPaso && (status === 'running' || status === 'waiting_human')) cls = 'active';
+        html += `<div class="step-dot ${cls}" title="Paso ${s}">${s}</div>`;
       }
       html += '</div>';
       return html;
@@ -804,8 +805,12 @@
       try {
         const content = await file.text();
         if (!content.trim()) throw new Error('El archivo está vacío');
+        const candidates = content.split(/\r?\n/).filter(line => /^[^\s@|,;]+@[^\s@|,;]+[|,;\s]|^[^\s@]+@[^\s@]+----/.test(line.trim()));
+        if (!candidates.length) {
+          throw new Error('No se detectaron cuentas. El archivo debe incluir correo y contraseña por línea.');
+        }
         document.getElementById('importText').value = content;
-        status.textContent = 'Archivo cargado: ' + file.name + '. Revisá el contenido y pulsá Importar cuentas.';
+        status.textContent = 'Archivo cargado: ' + file.name + ' (' + candidates.length + ' líneas con correo). Revisá y pulsá Importar cuentas.';
       } catch (error) {
         status.textContent = 'No se pudo leer el archivo: ' + error.message;
       }
@@ -814,12 +819,19 @@
     async function importAccounts() {
       const raw = document.getElementById('importText').value.trim();
       if (!raw) return alert('Pegá cuentas en el cuadro o seleccioná un archivo TXT/CSV.');
-      const res = await fetch('/api/accounts/import', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ raw_text: raw })
-      });
-      const data = await res.json();
+      let data;
+      try {
+        const res = await fetch('/api/accounts/import', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ raw_text: raw })
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        data = await res.json();
+      } catch (error) {
+        document.getElementById('importFileStatus').textContent = 'Error de importación: ' + error.message;
+        return;
+      }
       if (data.ok) {
         document.getElementById('importText').value = '';
         document.getElementById('importFileStatus').textContent = 'Importación terminada: ' + data.added + ' nuevas; ' + data.total + ' cuentas en total.';
@@ -830,7 +842,7 @@
     }
 
     function validateCardBeforeRun(startStep) {
-      if (startStep > 4) return true;
+      if (startPaso > 4) return true;
       const num = document.getElementById('cfgCardNumber').value.replace(/\s+/g, '');
       const expM = document.getElementById('cfgExpMonth').value.trim();
       const expY = document.getElementById('cfgExpYear').value.trim();
@@ -844,13 +856,13 @@
     }
 
     async function runSingle(accountId) {
-      const startStep = selectedStartSteps[accountId] || 1;
+      const startPaso = selectedStartSteps[accountId] || 1;
       if (!validateCardBeforeRun(startStep)) return;
       await saveConfig();
       const res = await fetch('/api/run/single', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ account_id: accountId, start_step: startStep })
+        body: JSON.stringify({ account_id: accountId, start_step: startPaso })
       });
       if (!res.ok) {
         const err = await res.json();
@@ -860,13 +872,13 @@
     }
 
     async function runBatch() {
-      const startStep = parseInt(document.getElementById('batchStartStep').value || '1');
+      const startPaso = parseInt(document.getElementById('batchStartStep').value || '1');
       if (!validateCardBeforeRun(startStep)) return;
       await saveConfig();
       const res = await fetch('/api/run/batch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ start_step: startStep })
+        body: JSON.stringify({ start_step: startPaso })
       });
       if (!res.ok) {
         const err = await res.json();
