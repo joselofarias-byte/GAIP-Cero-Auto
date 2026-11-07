@@ -202,6 +202,8 @@ async def import_accounts(req: ImportAccountsReq):
             parts = [p.strip() for p in line.split("|") if p.strip()]
         elif "/" in line and "@" in line and "http://" not in line and "https://" not in line:
             parts = [p.strip() for p in line.split("/") if p.strip()]
+        elif re.match(r"^[^\\s:@]+@[^\\s:]+:", line):
+            parts = line.split(":", 1)
         elif "\t" in line:
             parts = [p.strip() for p in line.split("\t") if p.strip()]
         elif "," in line:
@@ -213,12 +215,12 @@ async def import_accounts(req: ImportAccountsReq):
             continue
 
         # Detect if first part is a label (no '@') or email (has '@')
-        if "@" in parts[0]:
+        if re.fullmatch(r"[^\\s@]+@[^\\s@]+\\.[^\\s@]+", parts[0]):
             email = parts[0]
             password = parts[1]
             rest = parts[2:]
             acc_id = f"Account_{len(existing) + 1}"
-        elif len(parts) >= 3 and "@" in parts[1]:
+        elif len(parts) >= 3 and re.fullmatch(r"[^\\s@]+@[^\\s@]+\\.[^\\s@]+", parts[1]):
             acc_id = parts[0]
             email = parts[1]
             password = parts[2]
@@ -251,6 +253,9 @@ async def import_accounts(req: ImportAccountsReq):
                     if proxy_str:
                         a["proxy"] = proxy_str
             continue
+
+        if any(a["id"] == acc_id for a in existing):
+            acc_id = f"Account_{len(existing) + 1}"
 
         existing.append(
             {
