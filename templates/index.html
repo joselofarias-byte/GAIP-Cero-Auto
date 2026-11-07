@@ -595,8 +595,8 @@
           configInitialized = true;
         }
 
-        renderAccounts(data.accounts || []);
         renderLogs(data.logs || []);
+        renderAccounts(data.accounts || []);
 
         const total = (data.accounts || []).length;
         const done = (data.accounts || []).filter(a => a.status === 'completed').length;
@@ -630,7 +630,7 @@
       for (let s = 1; s <= 5; s++) {
         let cls = '';
         if (status === 'completed' || s < curStep) cls = 'done';
-        else if (s === curPaso && (status === 'running' || status === 'waiting_human')) cls = 'active';
+        else if (s === curStep && (status === 'running' || status === 'waiting_human')) cls = 'active';
         html += `<div class="step-dot ${cls}" title="Paso ${s}">${s}</div>`;
       }
       html += '</div>';
