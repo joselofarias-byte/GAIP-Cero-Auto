@@ -190,96 +190,94 @@ async def import_accounts(req: ImportAccountsReq):
     existing = cfg.get("accounts", [])
     existing_emails = {a["email"].lower().replace(".", "") for a in existing}
 
-    lines = [l.strip() for l in req.raw_text.splitlines() if l.strip()]
+    import csv
+    import io
+
+    def normalizar_email(value: str) -> str:
+        return value.strip().lower()
+
+    def separar(linea: str):
+        linea = linea.strip().lstrip("\ufeff")
+        if not linea or linea.startswith("#"):
+            return []
+        for delim in ("----", "\t", "|", ";", "—"):
+            if delim in linea:
+                return [x.strip() for x in linea.split(delim)]
+        if "," in linea:
+            return [x.strip() for x in next(csv.reader([linea], skipinitialspace=True))]
+        if re.match(r"^[^\s:@]+@[^\s:]+:", linea):
+            return [x.strip() for x in linea.split(":", 1)]
+        return re.split(r"\s+", linea)
+
+    lines = [line.strip() for line in req.raw_text.splitlines() if line.strip()]
     added = 0
-    for line in lines:
-        # Support delimiters: ----, —, |, /, \t, comma, or whitespace
-        if "----" in line:
-            parts = [p.strip() for p in line.split("----") if p.strip()]
-        elif "—" in line:
-            parts = [p.strip() for p in line.split("—") if p.strip()]
-        elif "|" in line:
-            parts = [p.strip() for p in line.split("|") if p.strip()]
-        elif "/" in line and "@" in line and "http://" not in line and "https://" not in line:
-            parts = [p.strip() for p in line.split("/") if p.strip()]
-        elif re.match(r"^[^\s:@]+@[^\s:]+:", line):
-            parts = line.split(":", 1)
-        elif "\t" in line:
-            parts = [p.strip() for p in line.split("\t") if p.strip()]
-        elif "," in line:
-            parts = [p.strip() for p in line.split(",") if p.strip()]
-        else:
-            parts = [p.strip() for p in re.split(r"\s+", line) if p.strip()]
-
+    updated = 0
+    skipped = 0
+    errors = []
+    for line_number, line in enumerate(lines, 1):
+        parts = separar(line)
+        if not parts:
+            continue
         if len(parts) < 2:
+            skipped += 1
+            errors.append(f"Línea {line_number}: faltan campos")
             continue
-
-        # Detect if first part is a label (no '@') or email (has '@')
-        if re.fullmatch(r"[^\s@]+@[^\s@]+\\.[^\s@]+", parts[0]):
-            email = parts[0]
-            password = parts[1]
-            rest = parts[2:]
-            acc_id = f"Account_{len(existing) + 1}"
-        elif len(parts) >= 3 and re.fullmatch(r"[^\s@]+@[^\s@]+\\.[^\s@]+", parts[1]):
-            acc_id = parts[0]
-            email = parts[1]
-            password = parts[2]
-            rest = parts[3:]
-        else:
+        parts = [p.strip().strip('"').strip("'") for p in parts]
+        email_idx = next((i for i in (0, 1) if i < len(parts) and re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", parts[i])), None)
+        if email_idx is None or len(parts) <= email_idx + 1 or not parts[email_idx + 1]:
+            skipped += 1
+            errors.append(f"Línea {line_number}: correo o contraseña inválidos")
             continue
-
+        email = parts[email_idx]
+        password = parts[email_idx + 1]
+        acc_id = parts[0] if email_idx == 1 else f"Account_{len(existing) + 1}"
+        rest = parts[email_idx + 2:]
         recovery_email = ""
         totp_secret = ""
         proxy_str = ""
         for token in rest:
             t_clean = token.replace(" ", "")
             if "@" in token and not token.lower().startswith(("http://", "https://", "socks5://")):
-                if token.lower() != email.lower() and not recovery_email:
-                    recovery_email = token.strip()
-            elif token.lower().startswith(("http://", "https://", "socks5://")) or re.match(r"^\d+\.\d+\.\d+\.\d+:\d+", token):
-                proxy_str = token.strip()
-            elif len(t_clean) >= 16 and re.match(r"^[A-Za-z2-7]+=*$", t_clean) and not totp_secret:
+                if normalizar_email(token) != normalizar_email(email) and not recovery_email:
+                    recovery_email = token
+            elif token.lower().startswith(("http://", "https://", "socks5://", "socks4://")) or re.match(r"^\d+\.\d+\.\d+\.\d+:\d+", token):
+                proxy_str = token
+            elif len(t_clean) >= 16 and re.fullmatch(r"[A-Za-z2-7]+=*", t_clean) and not totp_secret:
                 totp_secret = t_clean
-
-        norm_email = email.lower().replace(".", "")
-        if norm_email in existing_emails:
-            for a in existing:
-                if a["email"].lower().replace(".", "") == norm_email:
-                    a["password"] = password
-                    if recovery_email:
-                        a["recovery_email"] = recovery_email
-                    if totp_secret:
-                        a["totp_secret"] = totp_secret
-                    if proxy_str:
-                        a["proxy"] = proxy_str
+        match = next((a for a in existing if normalizar_email(a.get("email", "")) == normalizar_email(email)), None)
+        if match:
+            match["password"] = password
+            if recovery_email: match["recovery_email"] = recovery_email
+            if totp_secret: match["totp_secret"] = totp_secret
+            if proxy_str: match["proxy"] = proxy_str
+            updated += 1
             continue
-
-        if any(a["id"] == acc_id for a in existing):
-            acc_id = f"Account_{len(existing) + 1}"
-
-        existing.append(
-            {
-                "id": acc_id,
-                "email": email,
-                "password": password,
-                "recovery_email": recovery_email,
-                "totp_secret": totp_secret,
-                "proxy": proxy_str,
-                "ip_info": "",
-                "status": "pending",
-                "current_step": 0,
-                "step_message": "Cuenta importada (pendiente)",
-                "expiry_date": "-",
-                "last_screenshot": "",
-            }
-        )
-        existing_emails.add(norm_email)
+        ids = {a.get("id") for a in existing}
+        if not acc_id or acc_id in ids:
+            next_id = len(existing) + 1
+            while f"Account_{next_id}" in ids:
+                next_id += 1
+            acc_id = f"Account_{next_id}"
+        existing.append({
+            "id": acc_id,
+            "email": email,
+            "password": password,
+            "recovery_email": recovery_email,
+            "totp_secret": totp_secret,
+            "proxy": proxy_str,
+            "ip_info": "",
+            "status": "pending",
+            "current_step": 0,
+            "step_message": "Cuenta importada (pendiente)",
+            "expiry_date": "-",
+            "last_screenshot": "",
+        })
         added += 1
 
     cfg["accounts"] = existing
     save_config(cfg)
-    append_log(f"[{time.strftime('%H:%M:%S')}] [IMPORT] ✅ Cuentas importadas o actualizadas: {added} ; total actual: {len(existing)}  cuentas")
-    return {"ok": True, "added": added, "total": len(existing)}
+    append_log(f"[{time.strftime('%H:%M:%S')}] [IMPORT] Nuevas: {added}; actualizadas: {updated}; omitidas: {skipped}; total: {len(existing)}")
+    return {"ok": True, "added": added, "updated": updated, "skipped": skipped, "errors": errors[:20], "total": len(existing)}
 
 
 @app.post("/api/accounts/delete")
