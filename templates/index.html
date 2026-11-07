@@ -805,7 +805,7 @@
       try {
         const content = await file.text();
         if (!content.trim()) throw new Error('El archivo está vacío');
-        const candidates = content.split(/\r?\n/).filter(line => /[^\s@|,;:]+@[^\s@|,;:]+\.[^\s@|,;:]+(?:----|:|\s|\||,|;|—)/.test(line.trim()));
+        const candidates = content.split(/\r?\n/).filter(line => /[^\s@]+@[^\s@]+\.[^\s@]+/.test(line));
         if (!candidates.length) {
           throw new Error('No se detectaron cuentas. El archivo debe incluir correo y contraseña por línea.');
         }
@@ -834,7 +834,7 @@
       }
       if (data.ok) {
         document.getElementById('importText').value = '';
-        document.getElementById('importFileStatus').textContent = 'Importación terminada: ' + data.added + ' nuevas; ' + data.total + ' cuentas en total.';
+        document.getElementById('importFileStatus').textContent = 'Importación: ' + data.added + ' nuevas, ' + (data.updated || 0) + ' actualizadas, ' + (data.skipped || 0) + ' omitidas. Total: ' + data.total + (data.errors?.length ? '. Detalles: ' + data.errors.join(' | ') : '');
         fetchState();
       } else {
         alert('Error al importar cuentas');
@@ -842,7 +842,7 @@
     }
 
     function validateCardBeforeRun(startStep) {
-      if (startPaso > 4) return true;
+      if (startStep > 4) return true;
       const num = document.getElementById('cfgCardNumber').value.replace(/\s+/g, '');
       const expM = document.getElementById('cfgExpMonth').value.trim();
       const expY = document.getElementById('cfgExpYear').value.trim();
